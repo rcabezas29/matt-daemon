@@ -20,5 +20,4 @@ class   Tintin_reporter
 
         void    log(const string &message);
         void    create_log_file(void);
-        
 };
