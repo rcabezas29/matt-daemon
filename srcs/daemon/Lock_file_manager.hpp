@@ -2,6 +2,8 @@
 
 #include <cstdio>
 #include <sys/file.h>
+#include <unistd.h>
+#include <iostream>
 
 #define LOCK_FILE "/var/lock/matt_daemon.lock"
 

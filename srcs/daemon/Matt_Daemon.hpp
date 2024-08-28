@@ -1,6 +1,11 @@
 #pragma once
 
 #include <Lock_file_manager.hpp>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <signal.h>
+#include <cstdlib>
+
 
 class   Matt_Daemon
 {

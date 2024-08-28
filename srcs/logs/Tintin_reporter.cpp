@@ -7,7 +7,7 @@ Tintin_reporter::~Tintin_reporter(void)
     this->_log_file.close();
 }
 
-void    Tintin_reporter::log(const string &message)
+void    Tintin_reporter::log(const std::string &message)
 {
     std::time_t currentTime = std::time(nullptr);
     std::tm     *localTime = std::localtime(&currentTime);

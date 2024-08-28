@@ -1,7 +1,7 @@
 #pragma once
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <iomanip>
 #include <ctime>
 
@@ -18,6 +18,6 @@ class   Tintin_reporter
         ~Tintin_reporter(void);
         Tintin_reporter &operator=(const Tintin_reporter &rhs);
 
-        void    log(const string &message);
+        void    log(const std::string &message);
         void    create_log_file(void);
 };

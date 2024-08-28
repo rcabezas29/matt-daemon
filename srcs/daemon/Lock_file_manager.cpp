@@ -1,4 +1,8 @@
-#include <Lock_file_manage.hpp>
+#include <Lock_file_manager.hpp>
+
+Lock_file_manager::Lock_file_manager(void) {}
+
+Lock_file_manager::~Lock_file_manager(void) {}
 
 void    Lock_file_manager::create_lock_file(void)
 {

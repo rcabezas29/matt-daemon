@@ -9,7 +9,7 @@ OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
 INC_DIRS := $(shell find $(SRC_DIRS) -type d)
 INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
-CXX := clang++
+CXX := g++
 CXXFLAGS := $(INC_FLAGS) -Wall -Wextra -Werror
 
 all: $(BUILD_DIR)/$(TARGET)
