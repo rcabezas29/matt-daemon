@@ -27,7 +27,7 @@ class Server
 		bool						_is_running;
 
 		Server(void);
-		void	handle_client_input(int clientSocket);
+		int		handle_client_input(int clientSocket);
 		void	remove_client(int clientSocket);
 
 	public:
@@ -37,5 +37,4 @@ class Server
 		void	initialize_socket(void);
 		void	run_server(void);
 		void	shutdown_server(void);
-		void	handle_client_input(void);
 };

@@ -12,7 +12,6 @@ Lock_file_manager::Lock_file_manager(void)
 	{
 		std::cerr << "Failed to acquire lock, another instance might be running." << std::endl;
 		close(this->_lffd);
-		// report in logs
 		exit(1);
 	}
 }

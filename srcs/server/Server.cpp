@@ -83,7 +83,11 @@ void	Server::run_server(void)
 					this->_tintin_reporter->log("Client accepted", "INFO");
 				}
 				else
-					handle_client_input(this->_pfds[i].fd);
+					if (handle_client_input(this->_pfds[i].fd) == -1)
+					{
+						this->_tintin_reporter->log("Quitting", "INFO");
+						return ;
+					}
 			}
 		}
 	}
@@ -104,34 +108,32 @@ void	Server::shutdown_server(void)
 			this->_socket_fd = -1;
 		}
 	}
-	this->_tintin_reporter->log("Quitting", "INFO");
 }
 
-void Server::handle_client_input(int client_socket)
+int	Server::handle_client_input(int client_socket)
 {
 	char	buffer[1024];
 
 	memset(buffer, 0, sizeof(buffer));
-	ssize_t	bytesReceived = recv(client_socket, buffer, sizeof(buffer) - 1, 0);
-	if (bytesReceived <= 0)
+	ssize_t	bytes_received = recv(client_socket, buffer, sizeof(buffer) - 1, 0);
+	if (bytes_received <= 0)
 	{
 		this->remove_client(client_socket);
 		close(client_socket);
-		return ;
+		return 0;
 	}
 
 	std::string	message(buffer);
-	message = message.substr(0, bytesReceived);
+	message = message.substr(0, bytes_received - 1);
 	if (message == "quit")
 	{
 		this->_tintin_reporter->log("Request quit", "INFO");
 		this->shutdown_server();
 		close(client_socket);
-		return ;
+		return -1;
 	}
 	this->_tintin_reporter->log("User input: " + message, "LOG");
-	// Log the message (this would ideally go through TintinReporter)
-	std::cout << "Received message: " << message << std::endl;
+	return 0;
 }
 
 void Server::remove_client(int client_socket)
