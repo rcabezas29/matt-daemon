@@ -13,11 +13,12 @@ class	Tintin_reporter
 	private:
 		std::ofstream	_log_file;
 
+		Tintin_reporter(const Tintin_reporter &copy);
+		Tintin_reporter	&operator=(const Tintin_reporter &rhs);
+
 	public:
 		Tintin_reporter(void);
-		Tintin_reporter(const Tintin_reporter &copy);
 		~Tintin_reporter(void);
-		Tintin_reporter &operator=(const Tintin_reporter &rhs);
 
 		void    log(const std::string &message, const std::string &type);
 };

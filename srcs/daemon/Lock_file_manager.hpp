@@ -11,12 +11,12 @@ class   Lock_file_manager
 {
     private:
         int _lffd;
+        Lock_file_manager(const Lock_file_manager &copy);
+        Lock_file_manager &operator=(const Lock_file_manager &rhs);
 
     public:
         Lock_file_manager(void);
-        Lock_file_manager(const Lock_file_manager &copy);
         ~Lock_file_manager(void);
-        Lock_file_manager &operator=(const Lock_file_manager &rhs);
 
         void    create_lock_file(void);
         void    remove_lock_file(void);

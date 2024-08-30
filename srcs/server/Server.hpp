@@ -27,6 +27,8 @@ class Server
 		bool						_is_running;
 
 		Server(void);
+		Server(const Server &copy);
+		Server	&operator=(const Server &rhs);
 		int		handle_client_input(int clientSocket);
 		void	remove_client(int clientSocket);
 
@@ -34,7 +36,6 @@ class Server
 		Server(Tintin_reporter *tr);
 		~Server(void);
 
-		void	initialize_socket(void);
 		void	run_server(void);
 		void	shutdown_server(void);
 };

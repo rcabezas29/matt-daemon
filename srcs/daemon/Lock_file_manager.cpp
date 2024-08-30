@@ -1,5 +1,8 @@
 #include <Lock_file_manager.hpp>
 
+Lock_file_manager::Lock_file_manager(const Lock_file_manager &copy) { (void)copy; }
+Lock_file_manager &Lock_file_manager::operator=(const Lock_file_manager &rhs) { (void)rhs; return *this; }
+
 Lock_file_manager::Lock_file_manager(void)
 {
 	this->_lffd = open(LOCK_FILE, O_CREAT | O_RDWR, 0666);

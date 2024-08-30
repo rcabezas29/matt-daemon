@@ -1,5 +1,8 @@
 #include <Tintin_reporter.hpp>
 
+Tintin_reporter::Tintin_reporter(const Tintin_reporter &copy) { (void)copy; }
+Tintin_reporter	&Tintin_reporter::operator=(const Tintin_reporter &rhs) { (void)rhs; return *this; }
+
 Tintin_reporter::Tintin_reporter(void)
 {
 	struct stat	sb;

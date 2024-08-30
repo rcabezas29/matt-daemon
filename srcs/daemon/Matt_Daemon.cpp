@@ -1,5 +1,8 @@
 #include <Matt_Daemon.hpp>
 
+Matt_Daemon::Matt_Daemon(const Matt_Daemon &copy) : _lfm(), _tintin_reporter(), _server(&_tintin_reporter) { (void)copy; }
+Matt_Daemon &Matt_Daemon::operator=(const Matt_Daemon &rhs) { (void)rhs; return *this; }
+
 Matt_Daemon::Matt_Daemon(void) : _lfm(), _tintin_reporter(), _server(&_tintin_reporter) {}
 
 Matt_Daemon::~Matt_Daemon(void) {}

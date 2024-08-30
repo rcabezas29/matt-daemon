@@ -1,6 +1,8 @@
 #include <Server.hpp>
 
 Server::Server(void) {}
+Server::Server(const Server &copy) { (void)copy; }
+Server	&Server::operator=(const Server &rhs) { (void)rhs; return *this; }
 
 Server::Server(Tintin_reporter *tr) : _tintin_reporter(tr), _socket_fd(-1), _is_running(false)
 {

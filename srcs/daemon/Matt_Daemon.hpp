@@ -16,11 +16,12 @@ class   Matt_Daemon
 		Tintin_reporter		_tintin_reporter;
 		Server				_server;
 
+        Matt_Daemon(const Matt_Daemon &copy);
+        Matt_Daemon &operator=(const Matt_Daemon &rhs);
+
     public:
         Matt_Daemon(void);
-        Matt_Daemon(const Matt_Daemon &copy);
         ~Matt_Daemon(void);
-        Matt_Daemon &operator=(const Matt_Daemon &rhs);
         void    start_daemon(void);
         void    start_server(void);
 };
