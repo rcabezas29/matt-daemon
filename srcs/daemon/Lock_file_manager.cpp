@@ -1,13 +1,6 @@
 #include <Lock_file_manager.hpp>
 
-Lock_file_manager::Lock_file_manager(void) {}
-
-Lock_file_manager::~Lock_file_manager(void)
-{
-	this->remove_lock_file();
-}
-
-void    Lock_file_manager::create_lock_file(void)
+Lock_file_manager::Lock_file_manager(void)
 {
 	this->_lffd = open(LOCK_FILE, O_CREAT | O_RDWR, 0666);
 	if (this->_lffd == -1)
@@ -22,6 +15,11 @@ void    Lock_file_manager::create_lock_file(void)
 		// report in logs
 		exit(1);
 	}
+}
+
+Lock_file_manager::~Lock_file_manager(void)
+{
+	this->remove_lock_file();
 }
 
 void    Lock_file_manager::remove_lock_file(void)

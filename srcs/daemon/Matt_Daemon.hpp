@@ -6,11 +6,15 @@
 #include <signal.h>
 #include <cstdlib>
 
+#include <Server.hpp>
+
 
 class   Matt_Daemon
 {
     private:
         Lock_file_manager   _lfm;
+		Tintin_reporter		_tintin_reporter;
+		Server				_server;
 
     public:
         Matt_Daemon(void);

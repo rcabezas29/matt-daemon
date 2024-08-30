@@ -1,21 +1,18 @@
 #include <Matt_Daemon.hpp>
 
-Matt_Daemon::Matt_Daemon(void) : _lfm() {}
+Matt_Daemon::Matt_Daemon(void) : _lfm(), _tintin_reporter(), _server(&_tintin_reporter) {}
 
 Matt_Daemon::~Matt_Daemon(void) {}
 
 void	Matt_Daemon::start_server(void)
 {
-	while (true)
-	{
-		sleep(5);
-	}
+	this->_server.run_server();
 }
 
 void    Matt_Daemon::start_daemon(void)
 {
     pid_t   pid;
-    this->_lfm.create_lock_file();
+    // this->_lfm.create_lock_file();
     
     /* Fork off the parent process */
     pid = fork();
