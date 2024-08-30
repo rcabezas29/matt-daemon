@@ -4,17 +4,18 @@ Server::Server(void) {}
 
 Server::Server(Tintin_reporter *tr) : _tintin_reporter(tr), _socket_fd(-1), _is_running(false)
 {
+	this->_tintin_reporter->log("Creating server", "INFO");
 	this->_socket_fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (this->_socket_fd == -1)
 	{
-		perror("Failed to create socket");
+		this->_tintin_reporter->log("Failed to create socket", "ERROR");
 		exit(EXIT_FAILURE);
 	}
 
 	int opt = 1;
 	if (setsockopt(this->_socket_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)
 	{
-		perror("Failed to set socket options");
+		this->_tintin_reporter->log("Failed to set socket options", "ERROR");
 		close(this->_socket_fd);
 		exit(EXIT_FAILURE);
 	}
@@ -26,17 +27,18 @@ Server::Server(Tintin_reporter *tr) : _tintin_reporter(tr), _socket_fd(-1), _is_
 
 	if (bind(this->_socket_fd, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) == -1)
 	{
-		perror("Failed to bind socket");
+		this->_tintin_reporter->log("Failed to bind socket", "ERROR");
 		close(this->_socket_fd);
 		exit(EXIT_FAILURE);
 	}
 	if (listen(this->_socket_fd, MAX_CLIENTS) == -1)
 	{
-		perror("Failed to listen on socket");
+		this->_tintin_reporter->log("Failed to listen on socket", "ERROR");
 		close(this->_socket_fd);
 		exit(EXIT_FAILURE);
 	}
 	this->_pfds.push_back({this->_socket_fd, POLLIN, 0});
+	this->_tintin_reporter->log("Server created", "INFO");
 }
 
 Server::~Server(void)
@@ -52,7 +54,7 @@ void	Server::run_server(void)
 		int pcount = poll(this->_pfds.data(), this->_pfds.size(), -1);
 		if (pcount == -1)
 		{
-			perror("poll() failed");
+			this->_tintin_reporter->log("poll() failed", "ERROR");
 			break ;
 		}
 
@@ -67,16 +69,18 @@ void	Server::run_server(void)
 					int client_fd = accept(this->_socket_fd, (struct sockaddr *)&client, &client_len);
 					if (client_fd == -1)
 					{
-						perror("Failed to accept client connection");
+						this->_tintin_reporter->log("Failed to accept client connection", "ERROR");
 						continue ;
 					}
 					if (this->_pfds.size() - 1 >= MAX_CLIENTS)
 					{
+						this->_tintin_reporter->log("Refused client connection", "INFO");
+						send(client_fd, "Matt_daemon: Connection refused\r\n", 21, 0);
 						close(client_fd);
 						continue ;
 					}
 					this->_pfds.push_back({client_fd, POLLIN, 0});
-					std::cout << "Client connected." << std::endl;
+					this->_tintin_reporter->log("Client accepted", "INFO");
 				}
 				else
 					handle_client_input(this->_pfds[i].fd);
@@ -100,6 +104,7 @@ void	Server::shutdown_server(void)
 			this->_socket_fd = -1;
 		}
 	}
+	this->_tintin_reporter->log("Quitting", "INFO");
 }
 
 void Server::handle_client_input(int client_socket)
@@ -119,11 +124,12 @@ void Server::handle_client_input(int client_socket)
 	message = message.substr(0, bytesReceived);
 	if (message == "quit")
 	{
+		this->_tintin_reporter->log("Request quit", "INFO");
 		this->shutdown_server();
 		close(client_socket);
 		return ;
 	}
-
+	this->_tintin_reporter->log("User input: " + message, "LOG");
 	// Log the message (this would ideally go through TintinReporter)
 	std::cout << "Received message: " << message << std::endl;
 }
