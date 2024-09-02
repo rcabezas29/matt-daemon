@@ -8,7 +8,6 @@
 
 #include <Server.hpp>
 
-
 class   Matt_Daemon
 {
     private:
@@ -16,12 +15,17 @@ class   Matt_Daemon
 		Tintin_reporter		_tintin_reporter;
 		Server				_server;
 
+		static Matt_Daemon	*_instance;
+
         Matt_Daemon(const Matt_Daemon &copy);
         Matt_Daemon &operator=(const Matt_Daemon &rhs);
+		static void	handle_signal(int signal);
 
     public:
         Matt_Daemon(void);
         ~Matt_Daemon(void);
         void    start_daemon(void);
         void    start_server(void);
+		void	stop_server(void);
+		void	reload_server(void);
 };

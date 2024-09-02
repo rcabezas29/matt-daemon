@@ -146,3 +146,10 @@ void Server::remove_client(int client_socket)
 	if (it != this->_pfds.end())
 		this->_pfds.erase(it);
 }
+
+void	Server::remove_clients(void)
+{
+	for (size_t i = 1; i < this->_pfds.size(); ++i)
+		close(this->_pfds[i].fd);
+	this->_pfds.resize(1);
+}

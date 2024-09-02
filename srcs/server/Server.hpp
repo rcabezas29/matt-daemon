@@ -38,4 +38,5 @@ class Server
 
 		void	run_server(void);
 		void	shutdown_server(void);
+		void	remove_clients(void);
 };
