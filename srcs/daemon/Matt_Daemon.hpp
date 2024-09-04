@@ -15,11 +15,12 @@ class   Matt_Daemon
 		Tintin_reporter		_tintin_reporter;
 		Server				_server;
 
-		static Matt_Daemon	*_instance;
+		static Matt_Daemon		*_instance;
 
         Matt_Daemon(const Matt_Daemon &copy);
         Matt_Daemon &operator=(const Matt_Daemon &rhs);
 		static void	handle_signal(int signal);
+		void		log(const std::string &message, const std::string &type);
 
     public:
         Matt_Daemon(void);

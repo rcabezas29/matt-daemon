@@ -41,11 +41,38 @@ Server::Server(Tintin_reporter *tr) : _tintin_reporter(tr), _socket_fd(-1), _is_
 	}
 	this->_pfds.push_back({this->_socket_fd, POLLIN, 0});
 	this->_tintin_reporter->log("Server created", "INFO");
+	this->_sfd = setup_signal_fd();
+	if (this->_sfd == -1)
+	{
+		this->_tintin_reporter->log("Failed to set up signal fd", "ERROR");
+		return;
+	}
+	this->_pfds.push_back({this->_sfd, POLLIN, 0});
 }
 
 Server::~Server(void)
 {
 	this->shutdown_server();
+}
+
+int	Server::setup_signal_fd(void)
+{
+    sigset_t mask;
+    sigemptyset(&mask);
+    sigaddset(&mask, SIGTERM);
+    sigaddset(&mask, SIGINT);
+    sigaddset(&mask, SIGHUP);
+    if (sigprocmask(SIG_BLOCK, &mask, NULL) == -1)
+	{
+        perror("sigprocmask");
+        return -1;
+    }
+    int sfd = signalfd(-1, &mask, 0);
+    if (sfd == -1) {
+        perror("signalfd");
+        return -1;
+    }
+    return sfd;
 }
 
 void	Server::run_server(void)
@@ -64,7 +91,31 @@ void	Server::run_server(void)
 		{
 			if (this->_pfds[i].revents & POLLIN)
 			{
-				if (this->_pfds[i].fd == this->_socket_fd)
+				if (this->_pfds[i].fd == this->_sfd)
+				{
+					struct signalfd_siginfo fdsi;
+					ssize_t	s = read(this->_sfd, &fdsi, sizeof(struct signalfd_siginfo));
+					if (s != sizeof(struct signalfd_siginfo))
+					{
+						this->_tintin_reporter->log("signalfd read() failed", "ERROR");
+						exit(1);
+					}
+
+					if (fdsi.ssi_signo == SIGHUP)
+					{
+						this->remove_clients();
+						this->_tintin_reporter->log("Daemon reloaded", "SIGNAL (SIGHUP)");
+					}
+					else if (fdsi.ssi_signo == SIGTERM || fdsi.ssi_signo == SIGINT)
+					{
+						this->_shutdown_requested = 1;
+						if (fdsi.ssi_signo == SIGTERM)
+							this->_tintin_reporter->log("Daemon stopped", "SIGNAL (SIGTERM)");
+						else
+							this->_tintin_reporter->log("Daemon stopped", "SIGNAL (SIGINT)");
+					}
+				}
+				else if (this->_pfds[i].fd == this->_socket_fd)
 				{
 					sockaddr_in	client;
 					socklen_t	client_len = sizeof(client);
@@ -74,10 +125,10 @@ void	Server::run_server(void)
 						this->_tintin_reporter->log("Failed to accept client connection", "ERROR");
 						continue ;
 					}
-					if (this->_pfds.size() - 1 >= MAX_CLIENTS)
+					if (this->_pfds.size() - 2 >= MAX_CLIENTS)
 					{
 						this->_tintin_reporter->log("Refused client connection", "INFO");
-						send(client_fd, "Matt_daemon: Connection refused\r\n", 21, 0);
+						send(client_fd, "Matt_daemon: Connection refused\r\n", 34, 0);
 						close(client_fd);
 						continue ;
 					}
@@ -85,12 +136,19 @@ void	Server::run_server(void)
 					this->_tintin_reporter->log("Client accepted", "INFO");
 				}
 				else
+				{
 					if (handle_client_input(this->_pfds[i].fd) == -1)
 					{
 						this->_tintin_reporter->log("Quitting", "INFO");
 						return ;
 					}
+				}
 			}
+		}
+		if (this->_shutdown_requested)
+		{
+			this->shutdown_server();
+			break ;
 		}
 	}
 }
@@ -140,6 +198,9 @@ int	Server::handle_client_input(int client_socket)
 
 void Server::remove_client(int client_socket)
 {
+	for (size_t i = 2; i < MAX_CLIENTS + 2; ++i)
+		if (this->_pfds[i].fd == client_socket)
+			close(this->_pfds[i].fd);
 	std::vector<struct pollfd>::iterator it = std::remove_if(this->_pfds.begin(), this->_pfds.end(), [client_socket](pollfd &pfd) {
 		return pfd.fd == client_socket;
 	});
@@ -149,7 +210,7 @@ void Server::remove_client(int client_socket)
 
 void	Server::remove_clients(void)
 {
-	for (size_t i = 1; i < this->_pfds.size(); ++i)
+	for (size_t i = 2; i < this->_pfds.size(); ++i)
 		close(this->_pfds[i].fd);
-	this->_pfds.resize(1);
+	this->_pfds.erase(this->_pfds.begin() + 2, this->_pfds.end());
 }

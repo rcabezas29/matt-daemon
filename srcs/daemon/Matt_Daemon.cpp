@@ -32,9 +32,6 @@ void    Matt_Daemon::start_daemon(void)
 		exit(EXIT_SUCCESS);
 	if (setsid() < 0)
 		exit(EXIT_FAILURE);
-	signal(SIGINT, this->handle_signal);
-	signal(SIGHUP, this->handle_signal);
-	signal(SIGTERM, this->handle_signal);
 	pid = fork();
 	if (pid < 0)
 	{
@@ -48,30 +45,37 @@ void    Matt_Daemon::start_daemon(void)
 	this->_tintin_reporter.log("started. PID: "+ std::to_string(getpid()), "INFO");
 }
 
-void	Matt_Daemon::stop_server(void)
-{
-	this->_server.shutdown_server();
-}
+// void	Matt_Daemon::stop_server(void)
+// {
+// 	this->_server._shutdown_requested = 1;
+// 	this->_server.set_running_state(false);
+// 	// this->_server.shutdown_server();
+// }
 
-void	Matt_Daemon::reload_server(void)
-{
-	this->_server.remove_clients();
-}
+// void	Matt_Daemon::reload_server(void)
+// {
+// 	this->_server._reload_requested = 1;
+// 	// this->_server.remove_clients();
+// }
 
-void	Matt_Daemon::handle_signal(int signal)
-{
-	Tintin_reporter	tr;
-	if (signal == SIGTERM || signal == SIGINT)
-	{
-		Matt_Daemon::_instance->stop_server();
-		if (signal == SIGTERM)
-			tr.log("Daemon stopped", "SIGNAL (SIGTERM)");
-		else
-			tr.log("Daemon stopped", "SIGNAL (SIGINT)");
-	}
-	else if (signal == SIGHUP)
-	{
-		Matt_Daemon::_instance->reload_server();
-		tr.log("Daemon reloaded", "SIGNAL (SIGHUP)");
-	}
-}
+// void	Matt_Daemon::log(const std::string &message, const std::string &type)
+// {
+// 	this->_tintin_reporter.log(message, type);
+// }
+
+// void	Matt_Daemon::handle_signal(int signal)
+// {
+// 	if (signal == SIGTERM || signal == SIGINT)
+// 	{
+// 		Matt_Daemon::_instance->stop_server();
+// 		if (signal == SIGTERM)
+// 			Matt_Daemon::_instance->log("Daemon stopped", "SIGNAL (SIGTERM)");
+// 		else
+// 			Matt_Daemon::_instance->log("Daemon stopped", "SIGNAL (SIGINT)");
+// 	}
+// 	else if (signal == SIGHUP)
+// 	{
+// 		Matt_Daemon::_instance->reload_server();
+// 		Matt_Daemon::_instance->log("Daemon reloaded", "SIGNAL (SIGHUP)");
+// 	}
+// }

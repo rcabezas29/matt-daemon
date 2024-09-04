@@ -25,7 +25,7 @@ void    Tintin_reporter::log(const std::string &message, const std::string &type
 	std::time_t currentTime = std::time(nullptr);
 	std::tm		*localTime = std::localtime(&currentTime);
 
-	this->_log_file << "[" << std::put_time(localTime, "%d / %m / %Y - %H : %M : %S") << "] ";
+	this->_log_file << "[" << std::put_time(localTime, "%d/%m/%Y - %H:%M:%S") << "] ";
 	this->_log_file << "[ " << type << " ] - ";
 	this->_log_file << "Matt_daemon: ";
 	this->_log_file << message << std::endl;
