@@ -6,12 +6,14 @@ Tintin_reporter	&Tintin_reporter::operator=(const Tintin_reporter &rhs) { (void)
 Tintin_reporter::Tintin_reporter(void)
 {
 	struct stat	sb;
+
 	if (stat("/var/log/matt_daemon", &sb) != 0 && mkdir("/var/log/matt_daemon", 0777) == -1)
 	{
 		std::cerr << "Error: Unable to crate log file" << std::endl;
 		exit(EXIT_FAILURE);
 	}
-	this->_log_file.open(LOG_FILE);
+	this->_log_file.open(LOG_FILE, std::ios_base::app);
+	this->_log_file.flush();
 	this->log("Started", "INFO");
 }
 

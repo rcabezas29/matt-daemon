@@ -19,14 +19,10 @@ class   Matt_Daemon
 
         Matt_Daemon(const Matt_Daemon &copy);
         Matt_Daemon &operator=(const Matt_Daemon &rhs);
-		static void	handle_signal(int signal);
-		void		log(const std::string &message, const std::string &type);
 
     public:
         Matt_Daemon(void);
         ~Matt_Daemon(void);
         void    start_daemon(void);
         void    start_server(void);
-		void	stop_server(void);
-		void	reload_server(void);
 };
