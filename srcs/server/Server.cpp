@@ -100,19 +100,21 @@ void	Server::run_server(void)
 						this->_tintin_reporter->log("signalfd read() failed", "ERROR");
 						exit(1);
 					}
-
 					if (fdsi.ssi_signo == SIGHUP)
 					{
 						this->remove_clients();
 						this->_tintin_reporter->log("Daemon reloaded", "SIGNAL (SIGHUP)");
 					}
-					else if (fdsi.ssi_signo == SIGTERM || fdsi.ssi_signo == SIGINT)
+					else if (fdsi.ssi_signo == SIGTERM || fdsi.ssi_signo == SIGINT || fdsi.ssi_signo == SIGQUIT)
 					{
 						this->_shutdown_requested = 1;
 						if (fdsi.ssi_signo == SIGTERM)
 							this->_tintin_reporter->log("Daemon stopped", "SIGNAL (SIGTERM)");
-						else
+						else if (fdsi.ssi_signo == SIGINT)
 							this->_tintin_reporter->log("Daemon stopped", "SIGNAL (SIGINT)");
+						else
+							this->_tintin_reporter->log("Daemon stopped", "SIGNAL (SIGQUIT)");
+						
 					}
 				}
 				else if (this->_pfds[i].fd == this->_socket_fd)
@@ -185,6 +187,7 @@ int	Server::handle_client_input(int client_socket)
 
 	std::string	message(buffer);
 	message = message.substr(0, bytes_received - 1);
+	message.erase(message.find_last_not_of("\r\n") + 1);
 	if (message == "quit")
 	{
 		this->_tintin_reporter->log("Request quit", "INFO");
